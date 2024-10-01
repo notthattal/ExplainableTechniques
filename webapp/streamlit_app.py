@@ -1,12 +1,9 @@
 import streamlit as st
-import seaborn as sns
-from scipy import stats
 import json
 from lime import lime_image
 import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
-import pytorch_lightning as pl
 from skimage.segmentation import mark_boundaries
 import torch
 import torch.nn.functional as F
@@ -21,76 +18,6 @@ import os
 
 WEBAPP_DATASET_PATH = "../data"
 IMAGENET_PATH = os.path.join(WEBAPP_DATASET_PATH, "TinyImageNet/")
-
-# Function to calculate statistics
-def calculate_stats(data):
-    '''
-    Given the data, calculate the measures of central tendency (mean, median, mode)
-    
-    Inputs:
-        data (ndarray): data for which the mean, median, and mode will be calculated
-    
-    Outputs:
-        mean: float64
-        median: float64
-        mode: float64
-    '''
-    mean = np.mean(data)
-    median = np.median(data)
-    rounded_data = np.round(data, 1)
-    mode = stats.mode(rounded_data, keepdims=False).mode
-    print(type(mean))
-    print(type(median))
-    print(type(mode))
-    return mean, median, mode
-
-# Function to generate datasets
-def generate_dataset(distribution_type, size=100):
-    '''
-    Generate a small dataset with the given distribution_type and size
-    
-    Inputs:
-        size (int): size of the generated dataset
-        distribtion_type (object): string representing the distribution type [Normal, Left-Skewed, Right-skewed]
-
-    Outputs:
-        data (ndarray): dataset to be used
-    '''
-    if distribution_type == 'Normal':
-        # Create an array of random elements with a normal distribution
-        return np.random.normal(loc=0, scale=1, size=size)
-    elif distribution_type == 'Left-skewed':
-        # Using scipy, create an array of random elements with a left-skewed distribution
-        data = stats.skewnorm.rvs(a=-5, size=size)
-        return data
-    elif distribution_type == 'Right-skewed':
-        # Using scipy, create an array of random elements with a right-skewed distribution
-        data = stats.skewnorm.rvs(a=5, size=size)
-        return data
-
-# Function to plot distribution
-def plot_distribution(data, mean, median, mode):
-    '''
-    Create a histogram plot to visualize the data distribution.
-    Includes mean, median, and mode as vertical lines for visualization purposes.
-    
-    Inputs:
-        data (ndarray): dataset whose distribution will be plotted
-        mean (float64): mean of the dataset
-        median (float64): median of the dataset
-        mode (float64): mode of the dataset
-
-    Outputs:
-        fig (pyplot.figure): histogram plot of the data passed as input
-    '''
-    fig, ax = plt.subplots(figsize=(10, 6))
-    sns.histplot(data, kde=True, ax=ax)
-    #Including the measures of central tendencies in the plot as vertical lines
-    ax.axvline(mean, color='r', linestyle='--', label=f'Mean: {mean:.2f}')
-    ax.axvline(median, color='g', linestyle='--', label=f'Median: {median:.2f}')
-    ax.axvline(mode, color='b', linestyle='--', label=f'Mode: {mode:.2f}')
-    ax.legend()
-    return fig
 
 def set_device():
     device = None
